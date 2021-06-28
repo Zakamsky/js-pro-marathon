@@ -1,2 +1,3 @@
+import './index.scss'
+
 console.log('## THIS');
-console.log('### AND THIS');
