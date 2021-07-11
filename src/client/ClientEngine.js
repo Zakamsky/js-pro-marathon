@@ -36,16 +36,16 @@ class ClientEngine {
   loadSprites(spritesGroup) {
     this.imageLoaders = [];
 
-    Object.keys(spritesGroup).forEach( groupName => {
+    Object.keys(spritesGroup).forEach((groupName) => {
       const group = spritesGroup[groupName];
       this.sprites[groupName] = group;
 
-      Object.keys(group).forEach( spriteName => {
+      Object.keys(group).forEach((spriteName) => {
         const { img } = group[spriteName];
         if (!this.images[img]) {
           this.imageLoaders.push(this.loadImage(img));
         }
-      })
+      });
     });
 
     return Promise.all(this.imageLoaders);

@@ -6,7 +6,7 @@ import levelCfg from '../config/world.json';
 
 class ClientGame {
   constructor(cfg) {
-    Object.assign(this, { cfg, });
+    Object.assign(this, { cfg });
 
     this.engine = this.createEngine();
     this.world = this.createWorld();
