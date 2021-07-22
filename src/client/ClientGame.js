@@ -23,17 +23,22 @@ class ClientGame {
   }
 
   createEngine() {
-    return new ClientEngine(document.getElementById(this.cfg.tagID));
+    return new ClientEngine(document.getElementById(this.cfg.tagID), this);
   }
 
   createWorld() {
     return new ClientWorld(this, this.engine, levelCfg);
   }
 
+  getWorld() {
+    return this.world;
+  }
+
   initEngine() {
     this.engine.loadSprites(sprites).then(() => {
       this.world.init();
       this.engine.on('render', (_, time) => {
+        this.engine.camera.focusAtGameObject(this.player);
         this.world.render(time);
       });
       this.engine.start();
@@ -43,39 +48,24 @@ class ClientGame {
 
   initKeys() {
     this.engine.input.onKey({
-      ArrowLeft: (keydown) => {
-        if (keydown) {
-          this.player.moveByCellCoord(-1, 0, (cell) => {
-            const isGrass = cell.findObjectsByType('grass').length;
-            return cell.x > 0 ? isGrass : false;
-          });
-        }
-      },
-      ArrowRight: (keydown) => {
-        if (keydown) {
-          this.player.moveByCellCoord(1, 0, (cell) => {
-            const isGrass = cell.findObjectsByType('grass').length;
-            return cell.x < this.engine.camera.width ? isGrass : false;
-          });
-        }
-      },
-      ArrowUp: (keydown) => {
-        if (keydown) {
-          this.player.moveByCellCoord(0, -1, (cell) => {
-            const isGrass = cell.findObjectsByType('grass').length;
-            return cell.y > 0 ? isGrass : false;
-          });
-        }
-      },
-      ArrowDown: (keydown) => {
-        if (keydown) {
-          this.player.moveByCellCoord(0, 1, (cell) => {
-            const isGrass = cell.findObjectsByType('grass').length;
-            return cell.y < this.engine.camera.height ? isGrass : false;
-          });
-        }
-      },
+      ArrowLeft: (keydown) => keydown && this.movePlayerToDir('left'),
+      ArrowRight: (keydown) => keydown && this.movePlayerToDir('right'),
+      ArrowUp: (keydown) => keydown && this.movePlayerToDir('up'),
+      ArrowDown: (keydown) => keydown && this.movePlayerToDir('down'),
     });
+  }
+
+  movePlayerToDir(dir) {
+    const dirs = {
+      left: [-1, 0],
+      right: [1, 0],
+      up: [0, -1],
+      down: [0, 1],
+    };
+
+    const { player } = this;
+
+    if (player) player.moveByCellCoord(dirs[dir][0], dirs[dir][1], (cell) => cell.findObjectsByType('grass').length);
   }
 
   static init(cfg) {
