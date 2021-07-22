@@ -9,6 +9,7 @@ module.exports = {
     sourceType: 'module',
   },
   rules: {
-    "object-curly-newline": ["error", { "multiline": true, "minProperties": 10 }]
+    "object-curly-newline": ["error", { "multiline": true, "minProperties": 10 }],
+    "no-plusplus": "off"
   },
 };
