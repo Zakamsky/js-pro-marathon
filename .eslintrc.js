@@ -10,6 +10,10 @@ module.exports = {
   },
   rules: {
     "object-curly-newline": ["error", { "multiline": true, "minProperties": 10 }],
-    "no-plusplus": "off"
+    "max-len": ["error", { "code": 130 }],
+    "no-plusplus": "off",
+    "no-bitwise": "warn",
+    "no-param-reassign": "warn",
+    "no-return-assign": "warn",
   },
 };
