@@ -20,6 +20,7 @@ class ClientGame {
 
   setPlayer(player) {
     this.player = player;
+    this.player.playerName = this.cfg.playerName;
   }
 
   createEngine() {
@@ -82,7 +83,6 @@ class ClientGame {
   static init(cfg) {
     if (!ClientGame.game) {
       ClientGame.game = new ClientGame(cfg);
-      // console.log('Game INIT!');
     }
   }
 }
