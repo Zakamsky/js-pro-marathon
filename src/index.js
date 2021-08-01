@@ -5,14 +5,24 @@ window.addEventListener('load', () => {
   const greeting = document.querySelector('.start-game');
   const form = document.getElementById('nameForm');
   const name = form.querySelector('.input');
-  const warning = form.querySelector('.warning');
+  const warning = {}
+  warning.long = form.querySelector('.warning--long');
+  warning.short = form.querySelector('.warning--short');
 
   form.addEventListener('submit', (evt) => {
+
     evt.preventDefault();
+    Object.values(warning).map( item => item.classList.remove('warning--show'));
+
     if (name.value.length > 12) {
-      warning.style.opacity = '1';
+      warning.long.classList.add('warning--show');
       return;
     }
+    if (name.value.length < 1) {
+      warning.short.classList.add('warning--show');
+      return;
+    }
+
     greeting.parentNode.removeChild(greeting);
     ClientGame.init({ tagID: 'game', playerName: name.value });
   });
