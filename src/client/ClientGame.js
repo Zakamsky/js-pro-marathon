@@ -20,7 +20,7 @@ class ClientGame {
 
   setPlayer(player) {
     this.player = player;
-    this.player.playerName = this.cfg.playerName;
+    // this.player.playerName = this.cfg.playerName;
   }
 
   createEngine() {
