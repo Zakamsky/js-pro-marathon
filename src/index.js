@@ -1,93 +1,91 @@
+import { io } from 'socket.io-client';
 import './index.scss';
 import ClientGame from './client/ClientGame';
+import {getTime} from "./common/util";
 
 window.addEventListener('load', () => {
-  ClientGame.init({ tagID: 'game' });
+
+  const greeting = document.querySelector('.start-game');
+  const form = document.getElementById('nameForm');
+  const name = form.querySelector('.input');
+
+  const warning = {};
+  warning.long = form.querySelector('.warning--long');
+  warning.short = form.querySelector('.warning--short');
+
+  const chatWrap = document.querySelector('.chat-wrap');
+  const chatForm = chatWrap.querySelector('#form');
+  const chatInput = chatForm.querySelector('#input');
+  const messageBlock = chatWrap.querySelector('.message');
+
+  let socket = null;
+
+  const submitName = (evt) => {
+    evt.preventDefault();
+    Object.values(warning).map((item) => item.classList.remove('warning--show'));
+
+    if (name.value.length > 12) {
+      warning.long.classList.add('warning--show');
+      return;
+    }
+    if (name.value.length < 1) {
+      warning.short.classList.add('warning--show');
+      return;
+    }
+
+    ClientGame.init({
+      tagID: 'game',
+      playerName: name.value,
+    });
+
+
+    const myName = name.value;
+
+    socket = io('https://jsprochat.herokuapp.com/');
+    socket.emit('start', name.value);
+
+    chatWrap.style.display = 'block';
+    form.removeEventListener('submit', submitName);
+    greeting.remove();
+
+
+    socket.on('chat online', (data) => {
+      console.log('### io chat online data: ', data);
+
+      messageBlock.insertAdjacentHTML('afterbegin', `<br><p><b>${getTime(data.time)}</b> - Всего онлайн: ${data.online}</p><br>`);
+    })
+
+    socket.on('chat connection', (data) => {
+      console.log('### io connection data', data);
+      messageBlock.insertAdjacentHTML('afterbegin', `<p><b>${getTime(data.time)}</b> - ${data.msg}</p>`);
+    })
+
+    socket.on('chat message', (data) => {
+      console.log('### io message data', data);
+      const mssgClass = myName === data.name ? 'accent' : '';
+      const mssgHtml = `<p class="${mssgClass}"><b>${getTime(data.time)}</b>/<i>${data.name}</i> - ${data.msg}</p>`;
+      messageBlock.insertAdjacentHTML('afterbegin', mssgHtml);
+    })
+
+    socket.on('chat disconnect', (data) => {
+      console.log('### io message data', data);
+
+      messageBlock.insertAdjacentHTML('afterbegin', `<p><b>${getTime(data.time)}</b> - ${data.msg}</p>`);
+    })
+
+  };
+
+  form.addEventListener('submit', submitName);
+
+  chatForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+
+    if (chatInput.value) {
+      console.log( '### chatInput.value: ', chatInput.value );
+      socket.emit( 'chat message', chatInput.value );
+      chatInput.value = '';
+    }
+  });
+
+
 });
-
-// import Catty from './assets/Female-2-Walk.png';
-
-// const spriteW = 48;
-// const spriteH = 48;
-//
-
-// =============== CHARACTER ================= //
-// const shots = 3;
-// let cycle = 0;
-// let frame = 0;
-//
-// let direction = null;
-// let py = canvasW / 2 - spriteH / 2;
-// let px = canvasW / 2 - spriteW / 2;
-//
-// function keyDownHandler(e) {
-//   direction = e.key;
-// }
-//
-// function keyUpHandler(e) {
-//   if (direction === e.key) {
-//     direction = null;
-//   }
-// }
-//
-// document.addEventListener('keydown', keyDownHandler);
-// document.addEventListener('keyup', keyUpHandler);
-//
-// const playerImg = document.createElement('img');
-// playerImg.src = Catty;
-//
-// const walk = (timestamp) => {
-//   switch (direction) {
-//     case 's':
-//     case 'ArrowDown':
-//     case 'Down':
-//       if (py <= canvasH - spriteH) {
-//         py += 10;
-//         frame = 0;
-//         cycle = (cycle + 1) % shots;
-//       }
-//       break;
-//     case 'w':
-//     case 'ArrowUp':
-//     case 'Up':
-//       if (py > 0) {
-//         py -= 10;
-//         frame = 3;
-//         cycle = (cycle + 1) % shots;
-//       }
-//       break;
-//     case 'a':
-//     case 'ArrowLeft':
-//     case 'Left':
-//       if (px >= 0) {
-//         px -= 10;
-//         frame = 1;
-//         cycle = (cycle + 1) % shots;
-//       }
-//       break;
-//     case 'd':
-//     case 'ArrowRight':
-//     case 'Right':
-//       if (px <= canvasW - spriteW) {
-//         px += 10;
-//         frame = 2;
-//         cycle = (cycle + 1) % shots;
-//       }
-//       break;
-//     default:
-//       break;
-//   }
-//
-//   ctx.clearRect(0, 0, canvasW, canvasH);
-//
-//   const offset = frame * spriteH;
-//   ctx.drawImage(playerImg, cycle * spriteW, offset, spriteW, spriteH, px, py, spriteW, spriteH);
-//
-//   window.requestAnimationFrame(walk);
-// };
-//
-// playerImg.addEventListener('load', () => {
-//
-//   window.requestAnimationFrame(walk);
-//
-// });
