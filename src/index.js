@@ -14,7 +14,6 @@ window.addEventListener('load', () => {
   const chatForm = chatWrap.querySelector('#form');
   const chatInput = chatForm.querySelector('#input');
 
-
   const submitName = (evt) => {
     evt.preventDefault();
     Object.values(warning).map((item) => item.classList.remove('warning--show'));
@@ -30,7 +29,7 @@ window.addEventListener('load', () => {
 
     ClientGame.init({
       tagID: 'game',
-      playerName: name.value
+      playerName: name.value,
     });
 
     chatWrap.style.display = 'block';
@@ -44,11 +43,9 @@ window.addEventListener('load', () => {
     evt.preventDefault();
 
     if (chatInput.value) {
-      console.log('### chatInput.value: ', chatInput.value)
+      console.log('### chatInput.value: ', chatInput.value);
 
       chatInput.value = '';
     }
-
-
-  })
+  });
 });
